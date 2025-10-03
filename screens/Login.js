@@ -4,6 +4,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+//Focus en los campos react-native-keyboard-aware-scroll-view
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 // Alertar personalizables para react native
 import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
 
@@ -13,7 +16,6 @@ import Logo from "../assets/logo.png";
 // Iconos
 import iconGmail from "../assets/icon/mail.png";
 import iconPassword from "../assets/icon/key.png";
-
 
 // Componente principal de la pantalla de Login
 export default function Login({ navigation }) {
@@ -119,6 +121,14 @@ export default function Login({ navigation }) {
   };
 
   return (
+    <KeyboardAwareScrollView
+      extraScrollHeight={40}
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      enableOnAndroid={true}
+      keyboardVerticalOffset={100}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+    >
+
       <View style={style.container}>
         <Image source={Logo} style={style.logo}/>
         <Text style={style.title}>Iniciar sesión</Text>
@@ -162,7 +172,8 @@ export default function Login({ navigation }) {
 
         <Text style={style.footerText}>¿No tienes cuenta aún? <Text onPress={() => navigation.navigate('SignUp')} style={style.link}>Regístrate</Text></Text>
       </View>
-  );
+    </KeyboardAwareScrollView>
+  )
 }
 
 const style = StyleSheet.create({
