@@ -109,7 +109,7 @@ export default function SignUp({ navigation }) {
   };
 
   return (
-    <ScrollView >
+    <ScrollView>
       <View style={styles.container}>
         <Image source={Logo} style={styles.logo} />
         <Text style={styles.title}>Regístrate</Text>
@@ -206,7 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-
   },
   logo: {
     width: 100,
