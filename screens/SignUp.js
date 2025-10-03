@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert,
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // Alertar personalizables para react native
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
@@ -140,7 +141,15 @@ export default function SignUp({ navigation }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: 40}}>
+    <KeyboardAwareScrollView
+          extraScrollHeight={40}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          enableOnAndroid={true}
+          keyboardVerticalOffset={100}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingBottom: 40 }}
+        >
+    
       <View style={styles.container}>
         <Image source={Logo} style={styles.logo} />
         <Text style={styles.title}>Regístrate</Text>
@@ -226,16 +235,16 @@ export default function SignUp({ navigation }) {
         <Text style={styles.signUpText}>¿Ya tienes cuenta? <Text onPress={() => navigation.navigate('Login')} style={styles.link}>Inicia sesión</Text></Text>
 
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#425949",
-    justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    justifyContent: "center"
   },
   logo: {
     width: 100,
