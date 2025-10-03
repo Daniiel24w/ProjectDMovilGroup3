@@ -2,19 +2,17 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../src/config/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 // Alertar personalizables para react native
-import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
+
+
 // Logo
 import Logo from "../assets/logo.png";
-
 // Iconos
 import iconGmail from "../assets/icon/mail.png";
 import iconPassword from "../assets/icon/key.png";
-import iconEyeOpen from "../assets/icon/eye-open.png";
-import iconEyeClose from "../assets/icon/eye-close.png";
-import { ScrollView } from 'react-native-web';
 
 
 // Componente principal de la pantalla de Login
@@ -36,7 +34,7 @@ export default function Login({ navigation }) {
     return passwordRegex.test(password);
   }
 
-  // Función para manejar el login del usuario
+  // Validaciones con if
   const handleLogin = async () => {
     if (!email || !password) {
       Dialog.show({
@@ -47,9 +45,25 @@ export default function Login({ navigation }) {
         closeOnOverlayTap: false
       });
       return;
+    } else if (!validarEmail(email) && !validarPassword(password)) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Correo y contraseña inválidos",
+      }); 
+      return;
+    } else if (!validarEmail(email)) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Correo inválido",
+      }); 
+      return;
+    } else if (!validarPassword(password)) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Contraseña inválida",
+      }); 
+      return;
     }
-
-    // Aca se intenta iniciar sesión con Firebase Authentication utilizando signInWithEmailAndPassword
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Toast.show({
@@ -58,23 +72,15 @@ export default function Login({ navigation }) {
         textBody: "Has iniciado sesión correctamente.",
       });
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] }); 
-
-      // En caso de error, se maneja el error y se muestra un mensaje predefinido segun el tipo de error
     } catch (error) {
-
-      const persValorAlert = {
-        button: "Cancelar",
-        closeOnOverlayTap: true,
-        errorPredeterminado: "Hubo un problema al iniciar sesión.",
-      };
       switch (error.code) {
         case 'auth/invalid-email':
           Dialog.show({
             type: ALERT_TYPE.WARNING,
             title: "Hubo un problema",
             textBody: "El formato del correo electrónico no es válido.",
-            button: persValorAlert.button,
-            closeOnOverlayTap: persValorAlert.closeOnOverlayTap
+            button: "Aceptar",
+            closeOnOverlayTap: true,
           });
           break;
         case 'auth/wrong-password':
@@ -82,8 +88,8 @@ export default function Login({ navigation }) {
             type: ALERT_TYPE.WARNING,
             title: "Hubo un problema",
             textBody: "La contraseña es incorrecta.",
-            button: persValorAlert.button,
-            closeOnOverlayTap: persValorAlert.closeOnOverlayTap
+            button: "Aceptar",
+            closeOnOverlayTap: true,
           });
           break;
         case 'auth/user-not-found':
@@ -91,8 +97,8 @@ export default function Login({ navigation }) {
             type: ALERT_TYPE.WARNING,
             title: "Hubo un problema",
             textBody: "No se encontró un usuario con este correo.",
-            button: persValorAlert.button,
-            closeOnOverlayTap: persValorAlert.closeOnOverlayTap
+            button: "Aceptar",
+            closeOnOverlayTap: true,
           });
           break;
         case 'auth/network-request-failed':
@@ -100,8 +106,8 @@ export default function Login({ navigation }) {
             type: ALERT_TYPE.WARNING,
             title: "Hubo un problema",
             textBody: "Error de conexión, por favor intenta más tarde.",
-            button: persValorAlert.button,
-            closeOnOverlayTap: persValorAlert.closeOnOverlayTap
+            button: "Aceptar",
+            closeOnOverlayTap: true,
           });
           break;
       }
@@ -112,10 +118,7 @@ export default function Login({ navigation }) {
     }
   };
 
-
-  // Esto es lo que retorna el componente, que es la renderizacion de la vista login
   return (
-      // Esto muestra el logo y el Iniciar sesión
       <View style={style.container}>
         <Image source={Logo} style={style.logo}/>
         <Text style={style.title}>Iniciar sesión</Text>
