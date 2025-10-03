@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert,
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+
 // Alertar personalizables para react native
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
@@ -38,7 +39,13 @@ export default function SignUp({ navigation }) {
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
+      Dialog.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Error",
+        textBody: "Las contraseñas no coinciden",
+        button: "Aceptar",
+        closeOnOverlayTap: false
+      })
       return;
     }
 
@@ -48,6 +55,30 @@ export default function SignUp({ navigation }) {
         type: ALERT_TYPE.WARNING,
         title: "Error",
         textBody: "La contraseña debe tener al menos 6 caracteres, incluyendo una letra mayúscula, una minúscula y un número.",
+        button: "Aceptar",
+        closeOnOverlayTap: false
+      });
+      return;
+    }
+
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Dialog.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Correo inválido",
+        textBody: "Por favor ingrese un correo válido",
+        button: "Aceptar",
+        closeOnOverlayTap: false
+      });
+      return;
+    }
+
+    if ((firstName.length < 4 || firstName > 25) || (lastName.length < 4 || lastName.length > 25)) {
+      Dialog.show({
+        type: ALERT_TYPE.WARNING,
+        title: "Nombre o apellido invalido",
+        textBody: "Debe tener entre 4 y 25 caracteres",
         button: "Aceptar",
         closeOnOverlayTap: false
       });
@@ -109,7 +140,7 @@ export default function SignUp({ navigation }) {
   };
 
   return (
-    <ScrollView >
+    <ScrollView contentContainerStyle={{flexGrow: 1, paddingBottom: 40}}>
       <View style={styles.container}>
         <Image source={Logo} style={styles.logo} />
         <Text style={styles.title}>Regístrate</Text>
@@ -191,14 +222,13 @@ export default function SignUp({ navigation }) {
           <Text style={styles.buttonText}>Registrarse</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.signUpText}>¿Ya tienes cuenta? Inicia sesión</Text>
-        </TouchableOpacity>
+        
+        <Text style={styles.signUpText}>¿Ya tienes cuenta? <Text onPress={() => navigation.navigate('Login')} style={styles.link}>Inicia sesión</Text></Text>
+
       </View>
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
