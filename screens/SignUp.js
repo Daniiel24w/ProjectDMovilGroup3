@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 // Logo
-import Logo from "../assets/logo.png";
+import Logo from "../assets/images/logo.png";
 // Iconos
 import iconGmail from "../assets/icon/mail.png";
 import iconPassword from "../assets/icon/key.png";
@@ -92,7 +92,6 @@ export default function SignUp({ navigation }) {
         title: "Registro exitoso",
         textBody: "Usuario registrado con éxito",
       });
-      navigation.reset({ index: 0, routes: [{ name: 'Login' }] }); 
     } catch (error) {
       switch (error.code) {
         case 'auth/email-already-in-use':
