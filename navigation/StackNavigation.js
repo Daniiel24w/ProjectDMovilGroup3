@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged } from 'firebase/auth'; 
 import { auth } from '../src/config/firebaseConfig'; 
 import { AlertNotificationRoot } from 'react-native-alert-notification';
+import CreateBooksScreen from "../screens/books/CreateBooksScreen";
+
 
 // Importamos el flujo de la aplicación principal
 import DrawerNavigation from './DrawerNavigation'; 
@@ -30,9 +32,14 @@ function AuthStack() {
 // --- 2. Componente para el Flujo Principal de la Aplicación ---
 // Simplemente renderiza tu Drawer Navigation
 function AppStack() {
-    // Si necesitas que este Stack tenga su propio header, lo defines aquí.
-    return <DrawerNavigation />;
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainDrawer" component={DrawerNavigation} />
+      <Stack.Screen name="CreateBooks" component={CreateBooksScreen} />
+    </Stack.Navigator>
+  );
 }
+
 
 
 function Navigation() {

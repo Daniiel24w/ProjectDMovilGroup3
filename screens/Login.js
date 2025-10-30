@@ -1,6 +1,7 @@
 // Importaciones a usar en la vista de Login
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth } from '../src/config/firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -17,13 +18,25 @@ import Logo from "../assets/images/logo.png";
 import iconGmail from "../assets/icon/mail.png";
 import iconPassword from "../assets/icon/key.png";
 
-// Componente principal de la pantalla de Login
 export default function Login({ navigation }) {
 
   // Estados para manejar el email, la contraseña y la visibilidad de la contraseña
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  // NUEVOS ESTADOS para el foco de los TextInput
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+  // Colores para el borde enfocado
+  const BORDER_COLOR_FOCUSED = '#2f3b32ff';
+  const BORDER_COLOR_BLURRED = '#d1d1d1';
+
+  // Función para obtener el estilo dinámico del borde
+  const getBorderStyle = (isFocused) => ({
+    borderColor: isFocused ? BORDER_COLOR_FOCUSED : BORDER_COLOR_BLURRED,
+    borderWidth: isFocused ? 2 : 1,
+  });
 
   // VALIDACIONES 
   const validarEmail = (email) => {
@@ -31,7 +44,7 @@ export default function Login({ navigation }) {
     return emailRegex.test(email);
   }
   const validarPassword = (password) => {
-    // Al menos 6 caracteres, una mayúscula, una minúscula y un número
+    
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
     return passwordRegex.test(password);
   }
@@ -73,6 +86,7 @@ export default function Login({ navigation }) {
         title: "Login exitoso",
         textBody: "Has iniciado sesión correctamente.",
       });
+      navigation.reset({ index: 0, routes: [{ name: 'Inicio' }] }); 
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-email':
@@ -115,73 +129,89 @@ export default function Login({ navigation }) {
       Toast.show({
           type: ALERT_TYPE.WARNING,
           title: "Hubo un problema",
+          textBody: "No se pudo iniciar sesión. Intenta nuevamente.",
         });
     }
   };
 
   return (
-    <KeyboardAwareScrollView
-      extraScrollHeight={40}
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      enableOnAndroid={true}
-      keyboardVerticalOffset={100}
-      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
-    >
+    <SafeAreaView style={style.safeAreaContainer}>
+      <KeyboardAwareScrollView
+        extraScrollHeight={40}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        enableOnAndroid={true}
+        keyboardVerticalOffset={100}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
 
-      <View style={style.container}>
-        <Image source={Logo} style={style.logo}/>
-        <Text style={style.title}>Iniciar sesión</Text>
-        <Text style={style.subTitle}>¡Bienvenido otra vez! Alegrado de verte</Text>
+        <View style={style.container}>
+          <Image source={Logo} style={style.logo}/>
+          <Text style={style.title}>Iniciar sesión</Text>
+          <Text style={style.subTitle}>¡Bienvenido otra vez! Alegrado de verte</Text>
 
-        <Text style={style.label}>Correo electrónico:</Text>
-        <View style={style.inputContainer}>
-          <Image source={iconGmail} style={style.icon}/>
-          <TextInput
-            style={style.input}
-            placeholder="Correo electrónico"
-            placeholderTextColor={"#6b6b6b"}
-            onChangeText={(value) => setEmail(value)}
-            value={email}
-            keyboardType="email-address"
-            autoCapitalize="none"/>
-        </View>
+          <Text style={style.label}>Correo electrónico:</Text>
+          <View style={[style.inputContainer, getBorderStyle(isEmailFocused)]}>
+            <Image source={iconGmail} style={style.icon}/>
+            <TextInput
+              style={style.input}
+              placeholder="Correo electrónico"
+              placeholderTextColor={"#6b6b6b"}
+              onChangeText={(value) => setEmail(value)}
+              value={email}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onFocus={() => setIsEmailFocused(true)}
+              onBlur={() => setIsEmailFocused(false)}/>
+          </View>
 
-        <Text style={style.label}>Contraseña:</Text>
-        <View style={style.inputContainer}>
-          <Image source={iconPassword} style={style.icon}/>
-          <TextInput
-            style={style.input}
-            placeholder="************"
-            placeholderTextColor={"#6b6b6b"}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}/>
-          <TouchableOpacity style={style.icon} onPress={() => setShowPassword(!showPassword)}>
-            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+          <Text style={style.label}>Contraseña:</Text>
+          <View style={[style.inputContainer, getBorderStyle(isPasswordFocused)]}>
+            <Image source={iconPassword} style={style.icon}/>
+            <TextInput
+              style={style.input}
+              placeholder="************"
+              placeholderTextColor={"#6b6b6b"}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              onFocus={() => setIsPasswordFocused(true)}
+              onBlur={() => setIsPasswordFocused(false)}/>
+            <TouchableOpacity style={style.icon} onPress={() => setShowPassword(!showPassword)}>
+              <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={20} color="#ccc" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={style.rememberPassword}>
+            <Text onPress={() => Dialog.show({
+            type: ALERT_TYPE.INFO,
+            title: "Recuperación de Contraseña",
+            textBody: "Funcionalidad no implementada. Aquí se iniciaría el proceso para reestablecer la contraseña.",
+            button: "Aceptar",
+            closeOnOverlayTap: true
+            })} style={style.link}>¿Olvide mi contraseña?</Text>
+          </View>
+
+          <TouchableOpacity onPress={handleLogin} style={style.button}>
+            <Text style={style.buttonText}>Ingresar</Text>
           </TouchableOpacity>
+
+          <Text style={style.footerText}>¿No tienes cuenta aún? <Text onPress={() => navigation.navigate('SignUp')} style={style.link}>Regístrate</Text></Text>
         </View>
-
-        <View style={style.rememberPassword}>
-          <Text onPress={() => navigation.navigate('#')} style={style.link}>¿Olvide mi contraseña?</Text>
-        </View>
-
-        <TouchableOpacity onPress={handleLogin} style={style.button}>
-          <Text style={style.buttonText}>Ingresar</Text>
-        </TouchableOpacity>
-
-        <Text style={style.footerText}>¿No tienes cuenta aún? <Text onPress={() => navigation.navigate('SignUp')} style={style.link}>Regístrate</Text></Text>
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   )
 }
 
 const style = StyleSheet.create({
-  container: {
+  safeAreaContainer: {
     flex: 1,
-    backgroundColor: "#425949",
-    justifyContent: "center",
+    backgroundColor: "#425949", 
+  },
+  container: {
     alignItems: "center",
     padding: 20,
+    paddingTop: 50, 
+    paddingBottom: 50,
   },
   logo: {
     width: 100,
