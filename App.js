@@ -1,5 +1,7 @@
 import React from 'react';
-import Navigation from './navigation/Navigation';
+
+// Import de navegacion
+import Navigation from './navigation/StackNavigation';
 
 
 export default function App() {

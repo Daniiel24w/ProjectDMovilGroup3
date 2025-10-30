@@ -13,7 +13,7 @@ import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
 
 
 // Logo
-import Logo from "../assets/logo.png";
+import Logo from "../assets/images/logo.png";
 // Iconos
 import iconGmail from "../assets/icon/mail.png";
 import iconPassword from "../assets/icon/key.png";
@@ -86,7 +86,7 @@ export default function Login({ navigation }) {
         title: "Login exitoso",
         textBody: "Has iniciado sesión correctamente.",
       });
-      navigation.reset({ index: 0, routes: [{ name: 'Home' }] }); 
+      navigation.reset({ index: 0, routes: [{ name: 'Inicio' }] }); 
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-email':
