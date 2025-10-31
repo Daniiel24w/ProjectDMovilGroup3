@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TextInput } from 'react-native-gesture-handler';
 import { database } from '../../src/config/firebaseConfig';
@@ -8,11 +8,12 @@ import FuncionesBooks from '../books/FuncionesBooks';
 
 const { height } = Dimensions.get('window');
 
-const LIBRARY_BACKGROUND = require('../../assets/images/image.png');
+const LIBRARY_BACKGROUND = require('../../assets/images/BackGround-Wallpaper.jpg');
 
 export default function BooksScreen({ navigation }) {
 
   const [books, setBooks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const collectionRef = collection(database, 'books');
@@ -27,12 +28,23 @@ export default function BooksScreen({ navigation }) {
           summary: doc.data().summary, 
           rating: doc.data().rating, 
           publicationYear: doc.data().publicationYear,
+          coverUrl: doc.data().coverUrl, // Añadimos coverUrl
         }))
       );
     });
 
     return unsubscribe;
   }, []);
+
+  // Filtrar libros en tiempo real basado en la búsqueda
+  const filteredBooks = books.filter(book => {
+    const queryLower = searchQuery.toLowerCase();
+    const titleLower = book.title.toLowerCase();
+    const authorLower = book.author.toLowerCase();
+
+    return titleLower.includes(queryLower) || authorLower.includes(queryLower);
+  });
+
 
   return (
     <View style={styles.container}>
@@ -51,10 +63,11 @@ export default function BooksScreen({ navigation }) {
         
           <View style={styles.searchInputContainer}>
             <Ionicons name="search" size={20} color="#888" style={{ marginRight: 8 }} />
-            <TextInput placeholder="Buscar libro..." style={styles.searchInput} />
-            <TouchableOpacity onPress={() => console.log('Abrir filtros')}>
-              <Ionicons name="options-outline" size={24} color="#333" />
-            </TouchableOpacity>
+            <TextInput 
+              placeholder="Buscar por título o autor..." 
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={setSearchQuery} />
           </View>
 
           
@@ -68,11 +81,11 @@ export default function BooksScreen({ navigation }) {
         </View>
 
         
-        <View style={styles.listContent}>
-          {books.map(book => (
+        <ScrollView style={styles.listContent} showsVerticalScrollIndicator={false}>
+          {filteredBooks.map(book => (
             <FuncionesBooks key={book.id} {...book} />
           ))}
-        </View>
+        </ScrollView>
 
       </View>
     </View>
@@ -82,22 +95,22 @@ export default function BooksScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#f0f0f0', // Fondo principal claro
   },
   backgroundImage: {
     width: '100%',
     height: height * 0.45,
     position: 'absolute',
   },
-  darkOverlay: {
+  darkOverlay: { // Mantenemos el overlay oscuro para la imagen de fondo
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Overlay más oscuro
   },
 
   buttonsSection: {
     flex: 1,
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: '#f0f0f0', // Fondo claro para la lista
     marginTop: height * 0.45 * 0.5,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -113,18 +126,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF', // Fondo blanco para el input para que resalte
     borderRadius: 25,
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: '#E0E0E0',
+    // Sombra para dar énfasis
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.20,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
     paddingVertical: 0,
   },
 
@@ -145,5 +163,6 @@ const styles = StyleSheet.create({
 
   listContent: {
     paddingBottom: 20,
+    flex: 1,
   },
 });

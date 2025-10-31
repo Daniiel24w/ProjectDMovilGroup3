@@ -1,9 +1,9 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import TabNavigation from './TabNavigation'; 
+
 import { Ionicons } from '@expo/vector-icons';
-import Home from '../screens/Home';
+import Home from '../screens/Home/Home';
 import Profile from '../screens/profile/ProfileScreen';
 import Books from '../screens/books/BooksScreen';
 import Settings from '../screens/miscellaneous/SettingsScreen';
@@ -11,24 +11,18 @@ import DrawerNavigationCustom from '../components/DrawerNavigationCustom';
 
 const Drawer = createDrawerNavigator();
 
-export default function MainDrawer() {
+function DrawerNavigation() {
   return (
     <Drawer.Navigator 
       initialRouteName="Inicio"
       screenOptions={({ navigation, route }) => ({
-        headerTitle: getFocusedRouteNameFromRoute(route) ?? 'Inicio',        
-        headerTransparent: false,
-        headerStyle: {
-          backgroundColor: 'white',
-          shadowColor: 'transparent',
-          elevation: 0,
-        },
+        headerTitle: getFocusedRouteNameFromRoute(route) ?? route.name,
+        headerTransparent: true, // Hacer el header transparente
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          fontFamily: 'Roboto-Medium',
+          fontFamily: 'Nunito-Bold',
           fontSize: 25,
-          color: 'black',
-          marginLeft: -50,
+          color: 'white', // Color del título en blanco
         },
         headerLeftContainerStyle: {
           paddingLeft: 20,
@@ -37,31 +31,34 @@ export default function MainDrawer() {
           <Ionicons 
             name="menu" 
             size={30}
-            color="black"
+            color="white" // Color del ícono de menú en blanco
             onPress={() => navigation.toggleDrawer()}
             style={{ paddingLeft: 10 }}
           />
         ),
-        drawerLabelStyle: {marginLeft: 25, fontFamily: 'Roboto-Medium', fontSize: 16},
-        drawerItemStyle: {
-          borderBottomWidth: 1,
-          borderBottomColor: '#EEE',
-          paddingVertical: 2,
-          marginHorizontal: 0, 
-          borderRadius: 40, 
+        drawerLabelStyle: {
+          marginLeft: 0, // Aumentar el espacio entre el ícono y el texto
+          fontFamily: 'Nunito-SemiBold', 
+          fontSize: 16,
         },
-        drawerActiveBackgroundColor: '#a67f441a',
-        drawerInactiveTintColor: '#333',
-        drawerActiveTintColor: '#835e27ff',
+        drawerItemStyle: {
+          paddingVertical: 10,
+          marginVertical: 5,
+          marginHorizontal: 10,
+          borderRadius: 15,
+        },
+        drawerActiveBackgroundColor: '#f0f0f0', // Un gris claro para el item activo
+        drawerInactiveTintColor: '#333', // Texto oscuro para items inactivos
+        drawerActiveTintColor: '#007BFF', // Un color azul para el item activo
         headerShown: true,
         })}
-      drawerContent={props => <DrawerNavigationCustom {...props} />}>
+      drawerContent={(props) => <DrawerNavigationCustom {...props} />}>
       <Drawer.Screen 
         name="Inicio" 
         component={Home}
         options={{
-          drawerIcon: (color) => (
-            <Ionicons name='home-outline' size={24} color={color} />
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name='home-outline' size={size} color={color} />
           )
         }}
       />
@@ -69,8 +66,8 @@ export default function MainDrawer() {
         name="Libros" 
         component={Books}
         options={{
-          drawerIcon: (color) => (
-            <Ionicons name='book-outline' size={24} color={color} />
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name='book-outline' size={size} color={color} />
           )
         }}
       />
@@ -78,8 +75,8 @@ export default function MainDrawer() {
         name="Perfil" 
         component={Profile}
         options={{
-          drawerIcon: (color) => (
-            <Ionicons name='person-outline' size={24} color={color} />
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name='person-outline' size={size} color={color} />
           )
         }}
       />
@@ -87,11 +84,12 @@ export default function MainDrawer() {
         name="Configuracion" 
         component={Settings}
         options={{
-          drawerIcon: (color) => (
-            <Ionicons name='settings-outline' size={24} color={color} />
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name='settings-outline' size={size} color={color} />
           )
         }}
       />
     </Drawer.Navigator>
   );
 }
+export default DrawerNavigation;
